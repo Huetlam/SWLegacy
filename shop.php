@@ -1,7 +1,7 @@
 
 <?php
 include 'dbconnect.php';
-$unit_stmt = $dbconnect->prepare("SELECT units.*, unittype.unittype FROM units JOIN unittype ON units.typeID = unittype.typeID");
+$unit_stmt = $dbconnect->prepare("SELECT unitclass.*, unittype.unittype FROM unitclass JOIN unittype ON unitclass.unittypeID = unittype.typeID");
 $unit_stmt->execute();
 $unit_result = $unit_stmt->get_result();
 $unit_data = $unit_result->fetch_all(MYSQLI_ASSOC);
@@ -26,11 +26,13 @@ $factionID = $user_data['factionID'];
 
 
 foreach ($unit_data as $unit) {
-  $id = $unit['unitID'];
+  $id = $unit['unitclassID'];
   $name = $unit['unitname'];
   $price = $unit['unitprice'];
   $upkeep = $unit['unitupkeep'];
-  $strength = $unit['unitstrength'];
+  $power = $unit['power'];
+  $health = $unit['health'];
+  $shielding = $unit['shielding'];
   $type = $unit['unittype'];
   $image = $unit['image'];
   $amount = $balance/$price;
@@ -40,12 +42,12 @@ foreach ($unit_data as $unit) {
   $upkeep = number_format($upkeep);
   // $price = 
 
-  $role_stmt = $dbconnect->prepare("SELECT roles_units.*, roles_users.* FROM roles_units JOIN roles_users ON roles_units.roleID = roles_users.roleID WHERE roles_units.unitID = '$id' AND roles_users.userID = '$userID'");
+  $role_stmt = $dbconnect->prepare("SELECT roles_units.*, roles_users.* FROM roles_units JOIN roles_users ON roles_units.roleID = roles_users.roleID WHERE roles_units.unitclassID = '$id' AND roles_users.userID = '$userID'");
   $role_stmt->execute();
   $role_result = $role_stmt->get_result();
 
   if ($role_result->num_rows == 0) {
-    $rolefaction_stmt = $dbconnect->prepare("SELECT roles_units.*, roles_factions.* FROM roles_units JOIN roles_factions ON roles_units.roleID = roles_factions.roleID WHERE roles_units.unitID = '$id' AND roles_factions.factionID = '$factionID'");
+    $rolefaction_stmt = $dbconnect->prepare("SELECT roles_units.*, roles_factions.* FROM roles_units JOIN roles_factions ON roles_units.roleID = roles_factions.roleID WHERE roles_units.unitclassID = '$id' AND roles_factions.factionID = '$factionID'");
     $rolefaction_stmt->execute();
     $rolefaction_result = $rolefaction_stmt->get_result();
 
@@ -64,7 +66,7 @@ foreach ($unit_data as $unit) {
     echo "<img src=uploads/$image class='card-img-top' style='height: 100%;' alt='...'>";
     echo '<div class="card-body">';
       echo "<h5 class='card-title'>$name</h5>";
-      echo "<p class='card-text'>Strength: $strength x </p> <p class='card-text'>Price: $price </p> <p class='card-text'>Upkeep: $upkeep</p> <p class='card-text'> Type: $type</p> <p class='card-text'> You Can Afford: $amount</p> <p class='card-text'> Can you buy it: $buyability</p>";
+      echo "<p class='card-text'>Power: $power </p>  <p class='card-text'>Health: $health</p><p class='card-text'>Shielding: $shielding </p> <p class='card-text'>Price: $price </p> <p class='card-text'>Upkeep: $upkeep</p> <p class='card-text'> Type: $type</p> <p class='card-text'> You Can Afford: $amount</p> <p class='card-text'> Can you buy it: $buyability</p>";
       echo "<form class='buyunit' action='buy.php?item=$id' method='post'>";
       ?>
       <p></p>
@@ -73,8 +75,18 @@ foreach ($unit_data as $unit) {
       <input placeholder='Amount' class="form-control" required type='number' name='amount' min='0'
       <?php echo " max='$amount'" ?> >
 
-
+      <?php
+      if ($buyability == "Yes"){
+      ?>
       <input type="submit" class="btn btn-success" name="submit" value="Buy">
+      <?php
+
+      }else{
+      ?>
+      <input type="submit" class="btn btn-danger" name="submit" value="Buy">
+      <?php
+      }
+      ?>
     </div>
     </form>
   <?php
