@@ -14,7 +14,10 @@ $userid_data = $userid_result->fetch_assoc();
 
 $userID=$userid_data['userID'];
 
-$inv_stmt = $dbconnect->prepare("SELECT units.*, user.*, unit_user.*, unittype.unittype FROM unit_user JOIN units ON unit_user.unitID=units.unitID JOIN user ON unit_user.userID=user.userID JOIN unittype ON units.typeID = unittype.typeID WHERE unit_user.userID=$userID");
+$inv_stmt = $dbconnect->prepare("SELECT unitclass.unitname, unitclass.image, units.unitID, COUNT(units.unitclassID) 'amount'
+FROM Units
+JOIN unitclass ON units.unitclassID = unitclass.unitclassID WHERE units.userID = $userID
+GROUP BY units.unitclassID");
 $inv_stmt->execute();
 $inv_result = $inv_stmt->get_result();
 $inv_data = $inv_result->fetch_all(MYSQLI_ASSOC);
@@ -33,8 +36,6 @@ foreach ($inv_data as $unit) {
   $id = $unit['unitID'];
   $name = $unit['unitname'];
   $amount = $unit['amount'];
-  $strength = $unit['unitstrength'];
-  $type = $unit['unittype'];
   $image = $unit['image'];
   echo '<div class="col-3">';
 
@@ -42,7 +43,7 @@ foreach ($inv_data as $unit) {
     echo "<img src=uploads/$image class='card-img-top' alt='...'>";
     echo '<div class="card-body">';
       echo "<h5 class='card-title'>$name</h5>";
-      echo "<p class='card-text'>Strength: $strength x </p> <p class='card-text'> Type: $type</p> <p class='card-text'> You Have: $amount</p>";
+      echo "<p class='card-text'> Amount: $amount</p>  <a href='index.php?page=detailedinv&u=$id'>View All $name</a>";
 
     echo "</div>";
   echo "</div>";
