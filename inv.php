@@ -14,7 +14,7 @@ $userid_data = $userid_result->fetch_assoc();
 
 $userID=$userid_data['userID'];
 
-$inv_stmt = $dbconnect->prepare("SELECT unitclass.unitname, unitclass.image, units.unitID, COUNT(units.unitclassID) 'amount'
+$inv_stmt = $dbconnect->prepare("SELECT unitclass.unitname, unitclass.image, unitclass.unitclassID, COUNT(units.unitclassID) 'amount'
 FROM Units
 JOIN unitclass ON units.unitclassID = unitclass.unitclassID WHERE units.userID = $userID
 GROUP BY units.unitclassID");
@@ -33,7 +33,7 @@ $inv_data = $inv_result->fetch_all(MYSQLI_ASSOC);
 <?php
 
 foreach ($inv_data as $unit) {
-  $id = $unit['unitID'];
+  $id = $unit['unitclassID'];
   $name = $unit['unitname'];
   $amount = $unit['amount'];
   $image = $unit['image'];
