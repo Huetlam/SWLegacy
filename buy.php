@@ -1,7 +1,6 @@
 <?php
 include 'dbconnect.php';
 session_start();
-$unitname = "test name";
 $userID = $_SESSION['session']['userID'];
 $faction_stmt = $dbconnect->prepare("SELECT factionID FROM user WHERE userID = $userID");
 $faction_stmt->execute();
@@ -72,6 +71,13 @@ if ($price<=$credits) {
   $upkeep_stmt = $dbconnect->prepare("UPDATE user SET `upkeep` = '$newupkeep' WHERE `userID` = '$userID'");
   $upkeep_stmt->execute();
 
+  $unitname_stmt = $dbconnect->prepare("SELECT unitname FROM unitnames ORDER BY RAND() LIMIT 1");
+  $unitname_stmt->execute();
+  $unitname_result = $unitname_stmt->get_result();
+  $unitname_data = $unitname_result->fetch_assoc();
+
+  $unitname = $unitname_data['unitname'];
+
   $additem_stmt = $dbconnect->prepare("INSERT INTO `units` (`unitname`, `unitclassID`, `health`, `power`, `shielding`, `carrycapacity`, `userID`) 
   VALUES (?,?,?,?,?,?,?)");
   $additem_stmt->bind_param("siiiiii", $unitname, $unitID, $health, $power, $shielding, $carrycapacity, $userID);
@@ -120,9 +126,16 @@ do{
     $upkeep_stmt = $dbconnect->prepare("UPDATE user SET `upkeep` = '$newupkeep' WHERE `userID` = '$userID'");
     $upkeep_stmt->execute();
 
+    $unitname_stmt = $dbconnect->prepare("SELECT unitname FROM unitnames ORDER BY RAND() LIMIT 1");
+    $unitname_stmt->execute();
+    $unitname_result = $unitname_stmt->get_result();
+    $unitname_data = $unitname_result->fetch_assoc();
+
+    $unitname = $unitname_data['unitname'];
+
     $additem_stmt = $dbconnect->prepare("INSERT INTO `units` (unitname, unitclassID, health, 'power', shielding, carrycapacity, userID) 
     VALUES (?,?,?,?,?,?,?)");
-    $additem_stmt->bind_param("siiiiiii", "Unit test name", $unitID, $health, $power, $shielding, $carrycapacity, $userID);
+    $additem_stmt->bind_param("siiiiiii", $unitname, $unitID, $health, $power, $shielding, $carrycapacity, $userID);
     $additem_stmt->execute();
     
     header("Location: index.php?page=shop&purchase=$unitID");

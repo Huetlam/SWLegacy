@@ -18,7 +18,7 @@ $unitstats_data = $unitstats_result->fetch_all(MYSQLI_ASSOC);
     <div class="row">
         <p class="display-4 title">Inventory</p>
     </div>
-    <div class="row">
+    <div class="row gap-5"> 
         <?php
 
         foreach ($unitstats_data as $unit) {
@@ -31,10 +31,7 @@ $unitstats_data = $unitstats_result->fetch_all(MYSQLI_ASSOC);
             $carrycapacity = $unit['carrycapacity'];
             $unittype = $unit['unittype'];
             $image = $unit['image'];
-            echo '<div class="col-3 p-3">';
-            ?>
-            
-                    <?php
+            echo '<div class="col-3">';
                         echo '<div class="card" style="width: 18rem; height: 100%;">';
                         ?>
                         <div class="card-header">
@@ -71,9 +68,31 @@ $unitstats_data = $unitstats_result->fetch_all(MYSQLI_ASSOC);
                                             echo '<input type="text" name ="name" placeholder="New Unit Name" maxlength="50" required>';
                                             echo '<input type="submit" class="btn btn-success" name="submit" value="Change Name">';
                                         echo "</form>";
-                                        echo "<form action='index.php?page=deleteunit&id=$id&u=$unitclassID' method='post'>";
-                                            echo '<input type="submit" class="btn btn-danger" name="submit" value="Disband Unit">';
-                                        echo "</form>";
+                                        
+                                        echo "<button type='button' class='btn btn-danger' data-bs-toggle='modal' data-bs-target='#deleteModal$id'>
+                                            Disband Unit
+                                        </button>";
+                                        
+                                        echo "<div class='modal fade custom-modal' id='deleteModal$id' tabindex='-1' aria-labelledby='exampleModalLabel' aria-hidden='true'>";
+                                        ?>
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" style="color: red;" id="exampleModalLabel">Disband Unit?</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p style="color: black;">Are you sure you want to disband this unit? This action cannot be undone</p>
+                                                    <?php echo "<p style='color: black;'>Unit: $name</p>";?>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+                                                    <?php echo "<a class='btn btn-danger' href='index.php?page=disbandunit&u=$unitclassID&id=$id'>Disband Unit</a>"; ?>
+                                                </div>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        <?php
                                     echo '</div>';
                                 echo '</div>';
                             echo "</div>";
@@ -83,3 +102,7 @@ $unitstats_data = $unitstats_result->fetch_all(MYSQLI_ASSOC);
         ?>
     </div>
 </div>
+<!-- Button trigger modal -->
+
+
+<!-- Modal -->
